@@ -56,7 +56,7 @@ export default function Home() {
         <Button onClick={onSubmit}>Create New User</Button>
       </div>
 
-      {/* Log in again */}
+      {/* Log in */}
       <div className="p-4 flex flex-col gap-y-4">
         <Input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input placeholder="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />

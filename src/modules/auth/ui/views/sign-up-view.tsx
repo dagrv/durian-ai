@@ -9,11 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const formSchema = z.object({
@@ -27,7 +26,6 @@ const formSchema = z.object({
 })
 
 export const SignUpView = () => {
-    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending]= useState(false);
 
@@ -49,10 +47,28 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
+                callbackURL: "/"
             },{
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/");
+                },
+                onError: ({error}) => {
+                    setError(error.message)
+                }
+            }
+        );
+    }
+
+    const onSocial = (provider: "github" | "google") => {
+        setError(null);
+        setPending(true);
+
+        authClient.signIn.social({
+                provider: provider,
+                callbackURL: "/"
+            },{
+                onSuccess: () => {
+                    setPending(false);
                 },
                 onError: ({error}) => {
                     setError(error.message)
@@ -69,7 +85,7 @@ export const SignUpView = () => {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
                             <div className="flex flex-col gap-6">
                                 <div className="flex flex-col items-center text-center">
-                                    <h1 className="text-2xl font-semibold">Let's get started</h1>
+                                    <h1 className="text-2xl font-semibold">Let&apos;s get started</h1>
                                     <p className="text-muted-foreground text-balance">Create your account</p>
                                 </div>
 
@@ -150,18 +166,13 @@ export const SignUpView = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Button disabled={pending} variant="outline" type="button" className="hover:shadow-md w-full font-semibold">
-                                        Google
-                                    </Button>
-                                    <Button disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold hover:none">
+                                    <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
                                         GitHub
                                     </Button>
-                                    {/* <Button variant="outline" type="button" className="w-full font-semibold">
-                                        Apple
+
+                                    <Button disabled={pending} onClick={() => onSocial("google")} variant="outline" type="button" className="shadow-sm w-full font-semibold">
+                                        Google
                                     </Button>
-                                    <Button variant="outline" type="button" className="w-full font-semibold">
-                                        Microsoft
-                                    </Button> */}
                                 </div>
 
                                 <div className="text-center text-sm">

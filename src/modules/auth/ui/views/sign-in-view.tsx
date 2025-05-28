@@ -9,20 +9,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const formSchema = z.object({
     email: z.string().email(),
-    password: z.string().min(1, { message: "A Password is required" })
+    password: z.string().min(1, { message: "Password is required" })
 })
 
 export const SignInView = () => {
-    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending]= useState(false);
 
@@ -40,19 +38,35 @@ export const SignInView = () => {
  
         authClient.signIn.email({
                 email: data.email,
-                password: data.password
+                password: data.password,
+                callbackURL: "/"
             },{
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/");
                 },
                 onError: ({error}) => {
                     setError(error.message)
                 }
             }
         );
+    }
 
-        
+    const onSocial = (provider: "github" | "google") => {
+        setError(null);
+        setPending(true);
+
+        authClient.signIn.social({
+                provider: provider,
+                callbackURL: "/"
+            },{
+                onSuccess: () => {
+                    setPending(false);
+                },
+                onError: ({error}) => {
+                    setError(error.message)
+                }
+            }
+        );
     }
     
     return (
@@ -113,18 +127,13 @@ export const SignInView = () => {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Button disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
-                                        Google
-                                    </Button>
-                                    <Button disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
+                                    <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
                                         GitHub
                                     </Button>
-                                    {/* <Button variant="outline" type="button" className="w-full font-semibold">
-                                        Apple
+
+                                    <Button disabled={pending} onClick={() => onSocial("google")} variant="outline" type="button" className="shadow-sm w-full font-semibold">
+                                        Google
                                     </Button>
-                                    <Button variant="outline" type="button" className="w-full font-semibold">
-                                        Microsoft
-                                    </Button> */}
                                 </div>
 
                                 <div className="text-center text-sm">

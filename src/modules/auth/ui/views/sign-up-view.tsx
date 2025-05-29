@@ -14,6 +14,8 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter} from "next/navigation";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
     name: z.string().min(1, {message: "Name is required" }),
@@ -26,6 +28,7 @@ const formSchema = z.object({
 })
 
 export const SignUpView = () => {
+    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending]= useState(false);
 
@@ -47,10 +50,12 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
-                callbackURL: "/"
+                callbackURL: "/",
+
             },{
                 onSuccess: () => {
                     setPending(false);
+                    router.push("/");
                 },
                 onError: ({error}) => {
                     setError(error.message)
@@ -167,11 +172,11 @@ export const SignUpView = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
-                                        GitHub
+                                        <FaGithub /> GitHub
                                     </Button>
 
                                     <Button disabled={pending} onClick={() => onSocial("google")} variant="outline" type="button" className="shadow-sm w-full font-semibold">
-                                        Google
+                                        <FaGoogle /> Google
                                     </Button>
                                 </div>
 

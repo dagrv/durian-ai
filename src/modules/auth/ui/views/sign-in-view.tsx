@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import { useRouter} from "next/navigation";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Link from "next/link";
 import { useState } from "react";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 const formSchema = z.object({
     email: z.string().email(),
@@ -21,6 +23,7 @@ const formSchema = z.object({
 })
 
 export const SignInView = () => {
+    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending]= useState(false);
 
@@ -43,8 +46,9 @@ export const SignInView = () => {
             },{
                 onSuccess: () => {
                     setPending(false);
+                    router.push("/");
                 },
-                onError: ({error}) => {
+                onError: ({ error }) => {
                     setError(error.message)
                 }
             }
@@ -128,11 +132,11 @@ export const SignInView = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="shadow-sm w-full font-semibold">
-                                        GitHub
+                                        <FaGithub /> GitHub
                                     </Button>
 
                                     <Button disabled={pending} onClick={() => onSocial("google")} variant="outline" type="button" className="shadow-sm w-full font-semibold">
-                                        Google
+                                        <FaGoogle/> Google
                                     </Button>
                                 </div>
 
